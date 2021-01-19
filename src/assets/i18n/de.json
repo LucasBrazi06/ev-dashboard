@@ -141,6 +141,7 @@
     "reset_filters": "Filter löschen",
     "browser_not_supported": "Dieser Browser wird nicht unterstützt! Bitte nutzen Sie Chrome oder Firefox.",
     "status": "Status",
+    "move": "Move",
     "menu": {
       "dashboard": "Dashboard",
       "charging_stations": "Ladestationen",
@@ -217,7 +218,8 @@
       "download": "Download",
       "test_connection": "Verbindung testen",
       "force_available_status": "Status verfügbar erzwingen",
-      "force_unavailable_status": "Status nicht verfügbar erzwingen"
+      "force_unavailable_status": "Status nicht verfügbar erzwingen",
+      "move": "Move"
     }
   },
   "issuer": {

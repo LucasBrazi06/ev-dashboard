@@ -3,6 +3,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
+import { SiteAreasDialogComponent } from 'shared/dialogs/site-areas/site-areas-dialog.component';
+import { TableMoveAction } from 'shared/table/actions/table-move-action';
 
 import { AuthorizationService } from '../../../../services/authorization.service';
 import { CentralServerService } from '../../../../services/central-server.service';
@@ -26,6 +28,7 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
   private siteArea!: SiteArea;
   private addAction = new TableAddAction().getActionDef();
   private removeAction = new TableRemoveAction().getActionDef();
+  private moveAction = new TableMoveAction().getActionDef();
 
   constructor(
     public spinnerService: SpinnerService,
@@ -47,6 +50,7 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
         this.centralServerService.getChargingStations(this.buildFilterValues(),
           this.getPaging(), this.getSorting()).subscribe((chargingStations) => {
             this.removeAction.disabled = (chargingStations.count === 0 || !this.hasSelectedRows());
+            this.moveAction.disabled = (chargingStations.count === 0 || !this.hasSelectedRows());
             observer.next(chargingStations);
             observer.complete();
           }, (error) => {
@@ -69,6 +73,7 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
   public toggleRowSelection(row: ChargingStation, checked: boolean) {
     super.toggleRowSelection(row, checked);
     this.removeAction.disabled = !this.hasSelectedRows();
+    this.moveAction.disabled = !this.hasSelectedRows();
   }
 
   public buildTableDef(): TableDef {
@@ -137,6 +142,7 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
       return [
         this.addAction,
         this.removeAction,
+        this.moveAction,
         ...tableActionsDef,
       ];
     }
@@ -170,6 +176,15 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
           });
         }
         break;
+
+      case ButtonAction.MOVE:
+        // Empty?
+        if (this.getSelectedRows().length === 0) {
+          this.messageService.showErrorMessage(this.translateService.instant('general.select_at_least_one_record'));
+        } else {
+          this.showMoveChargersDialog(this.getSelectedRows());
+        }
+        break;
     }
   }
 
@@ -187,6 +202,21 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
     const dialogRef = this.dialog.open(ChargingStationsDialogComponent, dialogConfig);
     // Register to the answer
     dialogRef.afterClosed().subscribe((chargers) => this.addChargers(chargers));
+  }
+
+  public showMoveChargersDialog(chargers: ChargingStation[]) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.panelClass = 'transparent-dialog-container';
+    dialogConfig.data = {
+      rowMultipleSelection: false,
+      staticFilter: {
+        Issuer: true
+      }
+    };
+    // Show
+    const dialogRef = this.dialog.open(SiteAreasDialogComponent, dialogConfig);
+    // Register to the answer
+    dialogRef.afterClosed().subscribe((siteArea) => this.moveChargers(chargers, siteArea[0].key));
   }
 
   private removeChargers(chargerIDs: string[]) {
@@ -240,5 +270,33 @@ export class SiteAreaChargingStationsDataSource extends TableDataSource<Charging
         }
       });
     }
+  }
+
+  private moveChargers(chargers: ChargingStation[], siteAreaID: string) {
+    chargers.forEach((charger) => {
+      charger.siteAreaID = siteAreaID;
+      this.centralServerService.updateChargingStationParams(charger).subscribe((response) => {
+        // Ok?
+        if (response.status === RestResponse.SUCCESS) {
+          // Ok
+          this.messageService.showSuccessMessage(this.translateService.instant('site_areas.update_chargers_success'));
+          // Refresh
+          this.refreshData().subscribe();
+          // Clear selection
+          this.clearSelectedRows();
+        } else {
+          Utils.handleError(JSON.stringify(response),
+            this.messageService, this.translateService.instant('site_areas.update_error'));
+        }
+      }, (error) => {
+        switch (error.status) {
+          case HTTPError.THREE_PHASE_CHARGER_ON_SINGLE_PHASE_SITE_AREA:
+            this.messageService.showErrorMessage('chargers.change_config_phase_error');
+            break;
+          default:
+            Utils.handleHttpError(error, this.router, this.messageService, this.centralServerService, 'site_areas.update_error');
+        }
+      })
+    });
   }
 }

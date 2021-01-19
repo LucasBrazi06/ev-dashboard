@@ -141,6 +141,7 @@
     "reset_filters": "Redefinit Filtros",
     "browser_not_supported": "Este browser não é suportado! Por favor utilise Google Chrome ou Mozilla Firefox",
     "status": "Status",
+    "move": "Move",
     "menu": {
       "dashboard": "Painel de Controlo",
       "charging_stations": "Estações de Carga",
@@ -217,7 +218,8 @@
       "download": "Download",
       "test_connection": "Testar Conexão",
       "force_available_status": "Forçar estado disponível",
-      "force_unavailable_status": "Forçar estado indisponível"
+      "force_unavailable_status": "Forçar estado indisponível",
+      "move": "Move"
     }
   },
   "issuer": {

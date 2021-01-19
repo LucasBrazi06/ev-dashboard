@@ -141,6 +141,7 @@
     "reset_filters": "Restablecer filtros",
     "browser_not_supported": "¡Este navegador no es compatible! Utilize Chrome o Firefox.",
     "status": "Estatus",
+    "move": "Move",
     "menu": {
       "dashboard": "Tablero",
       "charging_stations": "Estaciones de carga",
@@ -217,7 +218,8 @@
       "download": "Descargar",
       "test_connection": "Test Connection",
       "force_available_status": "Forzar estatus a disponible",
-      "force_unavailable_status": "Forzar estatus a no disponible"
+      "force_unavailable_status": "Forzar estatus a no disponible",
+      "move": "Move"
     }
   },
   "issuer": {

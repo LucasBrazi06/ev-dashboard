@@ -141,6 +141,7 @@
     "reset_filters": "Réinitialiser les Filtres",
     "browser_not_supported": "Ce navigateur n'est pas supporté ! Veuillez utiliser Chrome ou Firefox.",
     "status": "Statut",
+    "move": "Déplacer",
     "menu": {
       "dashboard": "Tableau de bord",
       "charging_stations": "Bornes",
@@ -217,7 +218,8 @@
       "download": "Télécharger",
       "test_connection": "Tester la connection",
       "force_available_status": "Forcer le Statut en Disponible",
-      "force_unavailable_status": "Forcer le Statut en Indisponible"
+      "force_unavailable_status": "Forcer le Statut en Indisponible",
+      "move": "Déplacer"
     }
   },
   "issuer": {
