@@ -318,8 +318,8 @@ export class AuthorizationService {
   }
 
 
-  public isSiteAdmin(siteID: string): boolean {
-    return this.isAdmin() || (!!this.loggedUser && !!this.loggedUser.sitesAdmin && this.loggedUser.sitesAdmin.includes(siteID));
+  public isSiteAdmin(siteID?: string): boolean {
+    return siteID ? (!!this.loggedUser && !!this.loggedUser.sitesAdmin && this.loggedUser.sitesAdmin.includes(siteID)) : this.loggedUser.rolesACL.includes('siteAdmin');
   }
 
   public isSiteOwner(siteID: string): boolean {

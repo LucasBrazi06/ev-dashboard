@@ -138,7 +138,7 @@ export class UserComponent extends AbstractTabComponent implements OnInit {
     this.isAdmin = this.authorizationService.isAdmin();
     this.isSuperAdmin = this.authorizationService.isSuperAdmin();
     this.isBasic = this.authorizationService.isBasic();
-    this.isSiteAdmin = this.authorizationService.hasSitesAdminRights();
+    this.isSiteAdmin = this.authorizationService.isSiteAdmin();
     if (!this.isAdmin) {
       this.setHashArray(['common', 'address', 'password', 'connections', 'miscs']);
     }
@@ -291,6 +291,9 @@ export class UserComponent extends AbstractTabComponent implements OnInit {
     this.sendEndUserErrorNotification = this.notifications.controls['sendEndUserErrorNotification'];
     this.sendBillingNewInvoice = this.notifications.controls['sendBillingNewInvoice'];
     this.sendAdminAccountVerificationNotification = this.notifications.controls['sendAdminAccountVerificationNotification'];
+    if (this.isSiteAdmin) {
+      this.role.disable();
+    }
     if (this.currentUserID) {
       this.loadUser();
     }
