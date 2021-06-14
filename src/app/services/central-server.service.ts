@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { BehaviorSubject, EMPTY, Observable, TimeoutError, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import SafeUrlAssembler from 'safe-url-assembler';
+import AdvancedConfiguration, { AuthServiceType } from 'types/configuration/AdvancedConfiguration';
 
 import { Asset, AssetConsumption } from '../types/Asset';
 import { BillingInvoice, BillingPaymentMethod, BillingTax } from '../types/Billing';
@@ -50,6 +51,7 @@ export class CentralServerService {
   private restServerAuthURL!: string;
   private restServerSecuredURL!: string;
   private centralSystemServerConfig: CentralSystemServerConfiguration;
+  private advancedConfig: AdvancedConfiguration;
   private initialized = false;
   private currentUserToken!: string;
   private currentUser!: UserToken;
@@ -1919,6 +1921,22 @@ export class CentralServerService {
       );
   }
 
+  public loginXSUAA(): Observable<LoginResponse> {
+    // Verify init
+    this.checkInit();
+    const user = {} as User;
+    // Set the tenant
+    user['tenant'] = this.windowService.getSubdomain();
+    // Execute
+    return this.httpClient.post<LoginResponse>(`${this.restServerAuthURL}/${ServerRoute.REST_SIGNINXSUAA}`, user,
+      {
+        headers: this.buildHttpHeaders(),
+      })
+      .pipe(
+        catchError(this.handleHttpError),
+      );
+  }
+
   public loginSucceeded(token: string): void {
     // Keep the token in local storage
     this.currentUserToken = token;
@@ -3260,9 +3278,13 @@ export class CentralServerService {
       // No: Process the init
       // Get the server config
       this.centralSystemServerConfig = this.configService.getCentralSystemServer();
+      this.advancedConfig = this.configService.getAdvanced();
       // Build Central Service URL
       this.centralRestServerServiceBaseURL = this.centralSystemServerConfig.protocol + '://' +
         this.centralSystemServerConfig.host + ':' + this.centralSystemServerConfig.port;
+      if(this.centralSystemServerConfig.subpath) {
+        this.centralRestServerServiceBaseURL += '/' + this.centralSystemServerConfig.subpath;
+      }
       // Set REST base URL
       this.centralServerNotificationService.setCentralRestServerServiceURL(this.centralRestServerServiceBaseURL);
       // Auth API
@@ -3291,7 +3313,11 @@ export class CentralServerService {
     }
     // Check token
     if (this.getLoggedUserToken()) {
-      header['Authorization'] = 'Bearer ' + this.getLoggedUserToken();
+      if(this.advancedConfig.globalAuthenticationService === AuthServiceType.XSUAA) {
+        header['emobilitytoken'] = this.getLoggedUserToken();
+      } else {
+        header['Authorization'] = 'Bearer ' + this.getLoggedUserToken();
+      }
     }
     // Build Header
     return new HttpHeaders(header);

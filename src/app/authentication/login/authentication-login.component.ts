@@ -3,10 +3,12 @@ import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/fo
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthServiceType } from 'types/configuration/AdvancedConfiguration';
 import { User } from 'types/User';
 
 import { AuthorizationService } from '../../services/authorization.service';
 import { CentralServerService } from '../../services/central-server.service';
+import { ConfigService } from '../../services/config.service';
 import { DialogService } from '../../services/dialog.service';
 import { MessageService } from '../../services/message.service';
 import { SpinnerService } from '../../services/spinner.service';
@@ -42,6 +44,7 @@ export class AuthenticationLoginComponent implements OnInit, OnDestroy {
   public constructor(
     private element: ElementRef,
     private centralServerService: CentralServerService,
+    private configService: ConfigService,
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
@@ -107,21 +110,30 @@ export class AuthenticationLoginComponent implements OnInit, OnDestroy {
     if (this.route.snapshot.fragment) {
       this.returnUrl += `#${this.route.snapshot.fragment}`;
     }
-    // Auto Logon in case of demo users
-    const email = this.route.snapshot.queryParamMap.get('email');
-    const password = this.route.snapshot.queryParamMap.get('password');
-    if (email === 'demo.demo@sap.com' && password) {
-      this.email.setValue(email);
-      this.password.setValue(password);
-      this.acceptEula.setValue('true');
-      this.login(this.formGroup.value);
-    }
+
     // Retrieve tenant's logo
     this.centralServerService.getTenantLogoBySubdomain(this.subDomain).subscribe((tenantLogo: string) => {
       if (tenantLogo) {
         this.tenantLogo = tenantLogo;
       }
     });
+
+    if(this.configService.getAdvanced().globalAuthenticationService &&
+        this.configService.getAdvanced().globalAuthenticationService === AuthServiceType.XSUAA) {
+        //auto logon using xsuaa session id
+        this.loginXSUAA();
+    }
+    else {
+      // Auto Logon in case of demo users
+      const email = this.route.snapshot.queryParamMap.get('email');
+      const password = this.route.snapshot.queryParamMap.get('password');
+      if (email === 'demo.demo@sap.com' && password) {
+        this.email.setValue(email);
+        this.password.setValue(password);
+        this.acceptEula.setValue('true');
+        this.login(this.formGroup.value);
+      }
+    }
   }
 
   public sidebarToggle() {
@@ -195,6 +207,42 @@ export class AuthenticationLoginComponent implements OnInit, OnDestroy {
             // Super Admin Users
             this.messageService.showWarningMessage(this.messages['super_user_account_pending']);
           }
+          break;
+        default:
+          Utils.handleHttpError(error, this.router, this.messageService,
+            this.centralServerService, 'general.unexpected_error_backend');
+      }
+    });
+  }
+
+  public loginXSUAA(): void {
+    this.spinnerService.show();
+    // clear User and UserAuthorization
+    this.authorizationService.cleanUserAndUserAuthorization();
+    // Login
+    this.centralServerService.loginXSUAA().subscribe((result) => {
+      this.spinnerService.hide();
+      this.centralServerService.loginSucceeded(result.token);
+      // login successful so redirect to return url
+      this.router.navigateByUrl(this.returnUrl as string);
+    }, (error) => {
+      this.spinnerService.hide();
+      switch (error.status) {
+        // Wrong email or password
+        //case HTTPError.OBJECT_DOES_NOT_EXIST_ERROR:
+        //  this.messageService.showErrorMessage(this.messages['wrong_email_or_password']);
+        //  break;
+        // Account is locked
+        case HTTPError.USER_ACCOUNT_LOCKED_ERROR:
+          this.messageService.showErrorMessage(this.messages['account_locked']);
+          break;
+        // Account is inactive
+        case HTTPError.USER_ACCOUNT_INACTIVE_ERROR:
+          this.messageService.showErrorMessage(this.messages['account_inactive']);
+          break;
+        // Account Suspended
+        case HTTPError.USER_ACCOUNT_BLOCKED_ERROR:
+          this.messageService.showErrorMessage(this.messages['account_suspended']);
           break;
         default:
           Utils.handleHttpError(error, this.router, this.messageService,

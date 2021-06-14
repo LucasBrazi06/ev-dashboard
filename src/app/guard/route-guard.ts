@@ -8,6 +8,8 @@ import { AuthorizationService } from '../services/authorization.service';
 import { CentralServerService } from '../services/central-server.service';
 import { ComponentService } from '../services/component.service';
 import { MessageService } from '../services/message.service';
+import { ConfigService } from '../services/config.service';
+import { AuthServiceType } from 'types/configuration/AdvancedConfiguration';
 
 @Injectable()
 export class RouteGuardService implements CanActivate, CanActivateChild, CanLoad {
@@ -25,6 +27,7 @@ export class RouteGuardService implements CanActivate, CanActivateChild, CanLoad
     private authorizationService: AuthorizationService,
     private translateService: TranslateService,
     private centralServerService: CentralServerService,
+    private configService: ConfigService,
     private componentService: ComponentService) {
 
     this.centralServerService.getCurrentUserSubject().subscribe((user) => {
@@ -56,29 +59,38 @@ export class RouteGuardService implements CanActivate, CanActivateChild, CanLoad
     this.userRole = undefined;
     // Add URL origin
     queryParams['returnUrl'] = routerState.url;
-    // Check user/pass in URL
-    const email = activatedRoute.queryParams['email'];
-    const password = activatedRoute.queryParams['password'];
-    if (email && password) {
-      // Login
-      this.centralServerService.login({
-        email,
-        password,
-        acceptEula: true,
-      }).subscribe(async (result) => {
-        // Success
-        this.centralServerService.loginSucceeded(result.token);
-        await this.redirectToDefaultRoute();
-      }, async (error) => {
-        // Report the error
-        this.messageService.showErrorMessage(
-          this.translateService.instant('authentication.wrong_email_or_password'));
-        // Navigate to login
-        await this.router.navigate([RouteGuardService.LOGIN_ROUTE], { queryParams: { email } });
-      });
-    } else {
-      // Not logged in so redirect to login page with the return url
-      await this.router.navigate([RouteGuardService.LOGIN_ROUTE], { queryParams });
+    console.log("globalAuthenticationService = " + this.configService.getAdvanced().globalAuthenticationService);
+    if(this.configService.getAdvanced().globalAuthenticationService &&
+        this.configService.getAdvanced().globalAuthenticationService === AuthServiceType.XSUAA) {
+          //navigate to login page which will handle the xsuaa connection
+          await this.router.navigate([RouteGuardService.LOGIN_ROUTE], { queryParams });
+      }
+    else {
+      // Check user/pass in URL
+      const email = activatedRoute.queryParams['email'];
+      const password = activatedRoute.queryParams['password'];
+      if (email && password) {
+        // Login
+        this.centralServerService.login({
+          email,
+          password,
+          acceptEula: true,
+        }).subscribe(async (result) => {
+          // Success
+          this.centralServerService.loginSucceeded(result.token);
+          await this.redirectToDefaultRoute();
+        }, async (error) => {
+          // Report the error
+          this.messageService.showErrorMessage(
+            this.translateService.instant('authentication.wrong_email_or_password'));
+          // Navigate to login
+          await this.router.navigate([RouteGuardService.LOGIN_ROUTE], { queryParams: { email } });
+        });
+      } else {
+        // Not logged in so redirect to login page with the return url
+        //go to login page to authenticate with built-in mechanism
+        await this.router.navigate([RouteGuardService.LOGIN_ROUTE], { queryParams });
+      }
     }
     return false;
   }

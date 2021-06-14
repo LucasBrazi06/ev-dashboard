@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Utils } from 'utils/Utils';
 
-import AdvancedConfiguration from '../types/configuration/AdvancedConfiguration';
+import AdvancedConfiguration, { AuthServiceType } from '../types/configuration/AdvancedConfiguration';
 import AssetConfiguration from '../types/configuration/AssetConfiguration';
 import AuthorizationConfiguration from '../types/configuration/AuthorizationConfiguration';
 import CarConfiguration from '../types/configuration/CarConfiguration';
@@ -55,6 +56,9 @@ export class ConfigService {
   }
 
   public getAdvanced(): AdvancedConfiguration {
+    if (Utils.isUndefined(this.getConfig().Advanced.globalAuthenticationService)) {
+      this.getConfig().Advanced.globalAuthenticationService = AuthServiceType.BUILT_IN;
+    }
     return this.getConfig().Advanced;
   }
 
