@@ -1155,6 +1155,8 @@
     },
     "import_users": "Importer des utilisateurs",
     "import_users_message": "L'import va supprimer tous les utilisateurs transférés précédemment qui n'ont pas encore été importé dans la base de données, voulez-vous continuer?",
+    "import_users_message_auto_activate": "L'import va supprimer tous les utilisateurs transférés précédemment qui n'ont pas encore été importé dans la base de données et les utilisateurs seront automatiquement activés, voulez-vous continuer?",
+    "import_users_auto_activation": "Activer automatiquement les nouveaux comptes utilisateurs à l'importation",
     "import_users_success": "{{inSuccess}} utilisateurs ont été enregistrés avec succès et seront importés de manière asynchrone",
     "import_users_partial": "{{inSuccess}} utilisateurs ont été enregistrés avec succès et seront importés de manière asynchrone et {{inError}} ont échoué, vérifiez les logs",
     "import_users_error": "{{inError}} utilisateurs n'ont pas pu être enregistré",
@@ -1376,10 +1378,12 @@
     "delete_no_tag": "Auncun badge n'a été supprimé",
     "import_tags": "Importer des bagdes",
     "import_tags_message": "L'import va supprimer tous les badges transférés précédemment qui n'ont pas encore été importé dans la base de données, voulez-vous continuer?",
+    "import_tags_message_auto_activate": "L'import va supprimer tous les badges transférés précédemment qui n'ont pas encore été importé dans la base de données et les utilisateurs seront automatiquement activés, voulez-vous continuer?",
     "import_tags_success": "{{inSuccess}} badges ont été enregistrés avec succès et seront importés de manière asynchrone",
     "import_tags_partial": "{{inSuccess}} badges ont été enregistrés avec succès et seront importés de manière asynchrone et {{inError}} ont échoué, vérifiez les logs",
     "import_tags_error": "{{inError}} badges n'ont pas pu être enregistré",
-    "import_no_tags": "Aucun badge n'a été enregistré"
+    "import_no_tags": "Aucun badge n'a été enregistré",
+    "import_tags_auto_activation": "Activer automatiquement les nouveaux badges à l'importation"
   },
   "tenants": {
     "title": "Organisation",

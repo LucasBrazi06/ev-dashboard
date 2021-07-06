@@ -3225,7 +3225,7 @@ export class CentralServerService {
       );
   }
 
-  public buildHttpHeadersFile(tenantID?: string): { name: string; value: string }[] {
+  public buildHttpHeadersFile(autoActivateUserAtImport?: string, autoActivateTagAtImport?: string, tenantID?: string): { name: string; value: string }[] {
     // Build File Header
     return [
       {
@@ -3236,7 +3236,25 @@ export class CentralServerService {
         name: 'Authorization',
         value: 'Bearer ' + this.getLoggedUserToken()
       },
+      {
+        name: 'autoActivateUserAtImport',
+        value: autoActivateUserAtImport
+      },
+      {
+        name: 'autoActivateTagAtImport',
+        value: autoActivateTagAtImport
+      },
     ];
+  }
+
+  public buildRestEndpointUrl(urlPatternAsString: ServerRoute, params: {[name: string]: string | number | null } = {}) {
+    let resolvedUrlPattern = urlPatternAsString as string;
+    for (const key in params) {
+      if (Object.prototype.hasOwnProperty.call(params, key)) {
+        resolvedUrlPattern = resolvedUrlPattern.replace(`:${key}`, encodeURIComponent(params[key]));
+      }
+    }
+    return `${this.restServerSecuredURL}/${resolvedUrlPattern}`;
   }
 
   private getLoggedUserToken(): string {
@@ -3364,16 +3382,6 @@ export class CentralServerService {
       });
     }
     return of(null);
-  }
-
-  private buildRestEndpointUrl(urlPatternAsString: ServerRoute, params: {[name: string]: string | number | null } = {}) {
-    let resolvedUrlPattern = urlPatternAsString as string;
-    for (const key in params) {
-      if (Object.prototype.hasOwnProperty.call(params, key)) {
-        resolvedUrlPattern = resolvedUrlPattern.replace(`:${key}`, encodeURIComponent(params[key]));
-      }
-    }
-    return `${this.restServerSecuredURL}/${resolvedUrlPattern}`;
   }
 }
 

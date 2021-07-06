@@ -159,3 +159,7 @@ export const UserRequiredImportProperties = [
   'firstName',
   'name'
 ];
+
+export const UserOptionalImportProperties = [
+  'siteIDs'
+];

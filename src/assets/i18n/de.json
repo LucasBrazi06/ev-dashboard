@@ -1155,6 +1155,8 @@
     },
     "import_users": "Nutzer Importieren",
     "import_users_message": "Der Import wird alle hochgeladenen Nutzer die noch nicht importiert wurden verwerfen, möchten Sie fortfahren?",
+    "import_users_message_auto_activate": "The import will discard all other previously uploaded users not yet imported in the database and users will be automatically activated, do you want to continue?",
+    "import_users_auto_activation": "Automatically activate new user account at importation time",
     "import_users_success": "{{inSuccess}} Nutzer wurden erfolgreich hochgeladen und werden nun verarbeitet",
     "import_users_partial": "{{inSuccess}} Nutzer wurden erfolgreich hochgeladen und werden nun verarbeitet und {{inError}} Nutzer sind fehlgeschlagen, bitte überprüfen Sie die Logs",
     "import_users_error": "Das Hochladen von {{inError}} Nutzern ist fehlgeschlagen",
@@ -1376,10 +1378,12 @@
     "delete_no_tag": "Es wurden keine Badges gelöscht",
     "import_tags": "Badges Importieren",
     "import_tags_message": "Der Import wird alle hochgeladenen Badges die noch nicht importiert wurden verwerfen, möchten Sie fortfahren?",
+    "import_tags_message_auto_activate": "The import will discard all other previously uploaded badges not yet imported in the database, do you want to continue?",
     "import_tags_success": "{{inSuccess}} Badges wurden erfolgreich hochgeladen und werden nun verarbeitet",
     "import_tags_partial": "{{inSuccess}} Badges wurden erfolgreich hochgeladen und werden nun verarbeitet und {{inError}} Badges sind fehlgeschlagen, bitte überprüfen Sie die Logs",
     "import_tags_error": "Das Hochladen von {{inError}} Badges ist fehlgeschlagen",
-    "import_no_tags": "Es wurden keine Badges hochgeladen"
+    "import_no_tags": "Es wurden keine Badges hochgeladen",
+    "import_tags_auto_activation": "Automatically activate new tag at importation time"
   },
   "tenants": {
     "title": "Organisation",

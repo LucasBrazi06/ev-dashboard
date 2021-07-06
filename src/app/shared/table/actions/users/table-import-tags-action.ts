@@ -1,6 +1,6 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { MatDialog } from '@angular/material/dialog';
-import { ServerAction } from 'types/Server';
+import { ServerAction, ServerRoute } from 'types/Server';
 import { TagOptionalImportProperties, TagRequiredImportProperties } from 'types/Tag';
 
 import { TableActionDef } from '../../../../types/Table';
@@ -21,6 +21,6 @@ export class TableImportTagsAction extends TableImportAction {
   }
 
   private importTags(tagDialogComponent: ComponentType<unknown>, dialog: MatDialog) {
-    super.import(tagDialogComponent, dialog, ServerAction.TAGS_IMPORT, 'tags', TagRequiredImportProperties, TagOptionalImportProperties);
+    super.import(tagDialogComponent, dialog, ServerRoute.REST_TAGS_IMPORT, 'tags', TagRequiredImportProperties, TagOptionalImportProperties);
   }
 }

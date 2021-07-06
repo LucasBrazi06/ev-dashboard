@@ -21,6 +21,16 @@
         </button>
         <span class="pt-2">{{ fileName }}</span>
       </div>
+      <div class="row pt-3">
+        <mat-checkbox (change)="handleAutoActivateUserAtImport($event.checked)" checked>
+          {{ "users.import_users_auto_activation" | translate }}
+        </mat-checkbox>
+      </div>
+      <div *ngIf="entity === 'tags'" class="row pt-3">
+        <mat-checkbox (change)="handleAutoActivateTagAtImport($event.checked)" checked>
+          {{ "tags.import_tags_auto_activation" | translate }}
+        </mat-checkbox>
+      </div>
       <div class="row">
         <mat-error *ngIf="!isFileValid">
           <div class="pt-2" [translate]="'general.invalid_file_error'"></div>
