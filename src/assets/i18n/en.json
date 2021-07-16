@@ -1966,7 +1966,16 @@
     "graph": {
       "power": "Instant Power (kW)",
       "no_consumption": "No consumption data available",
-      "limit_watts": "Limit (kW)"
+      "asset_consumption_watts": "Asset Consumption (kW)",
+      "asset_production_watts": "Asset Production (kW)",
+      "charging_station_consumption_watts": "Charging Stations Consumption (kW)",
+      "net_consumption_watts": "Net Consumption (kW)",
+      "limit_watts": "Limit (kW)",
+      "asset_consumption_amps": "Asset Consumption (A)",
+      "asset_production_amps": "Asset Production (A)",
+      "charging_station_consumption_amps": "Charging Stations Consumption (A)",
+      "net_consumption_amps": "Net Consumption (A)",
+      "limit_amps": "Limit (A)"
     }
   },
   "asset": {

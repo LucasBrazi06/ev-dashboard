@@ -15,13 +15,16 @@
     <app-chart-unit-selector (unitChanged)="unitChanged($event)"></app-chart-unit-selector>
   </div>
 </div>
-<div *ngIf="siteArea?.values?.length === 0" class="graph-no-consumption">
+<div *ngIf="siteArea?.values?.netConsumptions?.length === 0" class="graph-no-consumption">
   {{'organization.graph.no_consumption' | translate}}
 </div>
-<div [hidden]="siteArea?.values?.length === 0">
+<div [hidden]="siteArea?.values?.netConsumptions?.length === 0">
   <div class="chart-container mt-2">
     <div #primary class='chart-primary'></div>
+    <div #secondary class='chart-secondary'></div>
     <div #danger class='chart-danger'></div>
+    <div #success class='chart-success'></div>
+    <div #warning class='chart-warning'></div>
     <canvas #chart></canvas>
   </div>
 </div>
